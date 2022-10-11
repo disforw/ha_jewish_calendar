@@ -1,5 +1,5 @@
 {
-  "name": "Orbit BHyve",
+  "name": "Jewish Calendar UI",
   "domains": ["sensor", "switch"],
   "iot_class": "Cloud Push"
 }
