@@ -88,7 +88,7 @@ class JewishCalendarConfigFlow(ConfigFlow, domain=DOMAIN):
                 {
                     vol.Optional(CONF_NAME, default=DEFAULT_NAME): str,
                     vol.Required(
-                        CONF_DIASPORA, default=DEFAULT_DIASPORA
+                        "Outside of Israel?", default=DEFAULT_DIASPORA
                     ): BooleanSelector(),
                     vol.Required(
                         CONF_LANGUAGE, default=DEFAULT_LANGUAGE
