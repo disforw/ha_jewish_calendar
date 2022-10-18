@@ -1,5 +1,5 @@
 {
   "name": "Jewish Calendar UI",
-  "domains": ["sensor", "switch"],
+  "domains": ["sensor", "binary_sensor"],
   "iot_class": "Cloud Push"
 }
