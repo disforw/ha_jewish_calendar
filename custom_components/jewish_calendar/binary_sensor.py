@@ -97,6 +97,11 @@ class JewishCalendarBinarySensor(BinarySensorEntity):
         """Return true if sensor is on."""
         zmanim = self._get_zmanim()
         return self.entity_description.is_on(zmanim)
+ 
+    @property
+    def name(self):
+        """Return the name of the sensor, if any."""
+        return self._attr_name
 
     def _get_zmanim(self) -> Zmanim:
         """Return the Zmanim object for now()."""
