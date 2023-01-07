@@ -65,8 +65,9 @@ async def async_setup_entry(
     async_add_entities(
         [
             JewishCalendarBinarySensor(
-                hass.data[DOMAIN][config_entry.entry_id], BINARY_SENSORS
+                hass.data[DOMAIN][config_entry.entry_id], description
             )
+            for description in BINARY_SENSORS
         ]
     )
 
@@ -76,6 +77,7 @@ class JewishCalendarBinarySensor(BinarySensorEntity):
 
     _attr_should_poll = False
     entity_description: JewishCalendarBinarySensorEntityDescription
+    _attr_has_entity_name = True
 
     def __init__(
         self,
@@ -84,8 +86,7 @@ class JewishCalendarBinarySensor(BinarySensorEntity):
     ) -> None:
         """Initialize the binary sensor."""
         self.entity_description = description
-        self._attr_name = f"{data['name']} {description.name}"
-        self._attr_unique_id = f"{data['prefix']}_{description.key}"
+        self._attr_unique_id = f"{data['name']}_{description.key}"
         self._location = data["location"]
         self._hebrew = data["language"] == "hebrew"
         self._candle_lighting_offset = data["candle_lighting_offset"]
@@ -97,7 +98,7 @@ class JewishCalendarBinarySensor(BinarySensorEntity):
         """Return true if sensor is on."""
         zmanim = self._get_zmanim()
         return self.entity_description.is_on(zmanim)
- 
+
     def _get_zmanim(self) -> Zmanim:
         """Return the Zmanim object for now()."""
         return hdate.Zmanim(
