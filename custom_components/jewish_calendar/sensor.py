@@ -24,7 +24,7 @@ from . import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
-INFO_SENSORS = (
+INFO_SENSORS: tuple[SensorEntityDescription, ...] = (
     SensorEntityDescription(
         key="date",
         name="Date",
@@ -52,7 +52,7 @@ INFO_SENSORS = (
     ),
 )
 
-TIME_SENSORS = (
+TIME_SENSORS: tuple[SensorEntityDescription, ...] = (
     SensorEntityDescription(
         key="first_light",
         name="Alot Hashachar",
@@ -86,6 +86,11 @@ TIME_SENSORS = (
     SensorEntityDescription(
         key="mga_end_tfila",
         name='Latest time for Tefilla MG"A',
+        icon="mdi:calendar-clock",
+    ),
+    SensorEntityDescription(
+        key="midday",
+        name="Chatzot Hayom",
         icon="mdi:calendar-clock",
     ),
     SensorEntityDescription(
@@ -157,6 +162,8 @@ async def async_setup_entry(
 class JewishCalendarSensor(SensorEntity):
     """Representation of an Jewish calendar sensor."""
 
+    _attr_has_entity_name = True
+
     def __init__(
         self,
         data: dict[str, str | bool | int | float],
@@ -164,8 +171,7 @@ class JewishCalendarSensor(SensorEntity):
     ) -> None:
         """Initialize the Jewish calendar sensor."""
         self.entity_description = description
-        self._attr_name = f"{data['name']} {description.name}"
-        self._attr_unique_id = f"{data['prefix']}_{description.key}"
+        self._attr_unique_id = f"{data['name']}_{description.key}"
         self._location = data["location"]
         self._hebrew = data["language"] == "hebrew"
         self._candle_lighting_offset = data["candle_lighting_offset"]
@@ -258,7 +264,7 @@ class JewishCalendarSensor(SensorEntity):
 
 
 class JewishCalendarTimeSensor(JewishCalendarSensor):
-    """Implement attrbutes for sensors returning times."""
+    """Implement attributes for sensors returning times."""
 
     _attr_device_class = SensorDeviceClass.TIMESTAMP
 
