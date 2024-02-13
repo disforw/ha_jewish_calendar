@@ -15,7 +15,7 @@ from homeassistant.const import (
     CONF_NAME,
     CONF_TIME_ZONE,
 )
-from homeassistant.core import HomeAssistant, callback
+from homeassistant.core import callback
 from homeassistant.data_entry_flow import FlowResult
 from homeassistant.helpers.selector import (
     BooleanSelector,
@@ -26,17 +26,15 @@ from homeassistant.helpers.selector import (
 )
 from homeassistant.helpers.typing import ConfigType
 
-from .const import (
-    CONF_CANDLE_LIGHT_MINUTES,
-    CONF_DIASPORA,
-    CONF_HAVDALAH_OFFSET_MINUTES,
-    DEFAULT_CANDLE_LIGHT,
-    DEFAULT_DIASPORA,
-    DEFAULT_HAVDALAH_OFFSET_MINUTES,
-    DEFAULT_LANGUAGE,
-    DEFAULT_NAME,
-    DOMAIN,
-)
+DOMAIN = "jewish_calendar"
+CONF_DIASPORA = "diaspora"
+CONF_CANDLE_LIGHT_MINUTES = "candle_lighting_minutes_before_sunset"
+CONF_HAVDALAH_OFFSET_MINUTES = "havdalah_minutes_after_sunset"
+DEFAULT_NAME = "Jewish Calendar"
+DEFAULT_CANDLE_LIGHT = 18
+DEFAULT_DIASPORA = False
+DEFAULT_HAVDALAH_OFFSET_MINUTES = 0
+DEFAULT_LANGUAGE = "english"
 
 LANGUAGE = [
     SelectOptionDict(value="hebrew", label="Hebrew"),
@@ -44,11 +42,6 @@ LANGUAGE = [
 ]
 
 _LOGGER = logging.getLogger(__name__)
-
-
-async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str, str]:
-    """Validate the user input."""
-    return {"title": data[CONF_NAME]}
 
 
 class JewishCalendarConfigFlow(ConfigFlow, domain=DOMAIN):
@@ -82,8 +75,9 @@ class JewishCalendarConfigFlow(ConfigFlow, domain=DOMAIN):
                     break
 
             try:
-                info = await validate_input(self.hass, user_input)
-                return self.async_create_entry(title=info["title"], data=user_input)
+                return self.async_create_entry(
+                    title=user_input[CONF_NAME], data=user_input
+                )
             except Exception:  # pylint: disable=broad-except
                 _LOGGER.exception("Unexpected exception")
                 errors["base"] = "unknown"
@@ -112,9 +106,9 @@ class JewishCalendarConfigFlow(ConfigFlow, domain=DOMAIN):
                     vol.Optional(
                         CONF_TIME_ZONE, default=self.hass.config.time_zone
                     ): SelectSelector(
-                         SelectSelectorConfig(
-                             options=sorted(zoneinfo.available_timezones()),
-                         )
+                        SelectSelectorConfig(
+                            options=sorted(zoneinfo.available_timezones()),
+                        )
                     ),
                 }
             ),
@@ -138,7 +132,7 @@ class JewishCalendarOptionsFlowHandler(OptionsFlow):
     ) -> FlowResult:
         """Manage the Jewish Calendar options."""
         if user_input is not None:
-            return self.async_create_entry(title="", data=user_input)
+            return self.async_create_entry(data=user_input)
 
         options = {
             vol.Optional(
